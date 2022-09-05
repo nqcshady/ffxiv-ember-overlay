@@ -1,23 +1,601 @@
 # Changelog
 
-## 0.26.0-alpha
+## 1.2.1
 
-**Released: [in development]**
+**2022-09-04**
 
 ### Bug Fixes
-- ?
+- Resolved issue with some oGCD actions causing other actions to start their cooldown timers (via action indirections)
 
 ### Features
-- UI builder
+- N/A
 
 ### UI Changes
-- ?
+- N/A
 
 ### Code Changes
-- ?
+- N/A
 
 ### Miscellaneous
-- ?
+- N/A
+
+## 1.2.0
+
+**2022-08-26**
+
+### Bug Fixes
+- N/A
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- Updated game data through FFXIV patch 6.2
+
+## 1.1.1
+
+**Released: 2022-08-13**
+
+### Bug Fixes
+- Resolved issue with inactive encounter replacing sample game data due to ACT plugin constantly sending inactive encounter data
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 1.1.0
+
+**Released: 2022-05-31**
+
+### Bug Fixes
+- N/A
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- Updated game data through FFXIV patch 6.11a
+
+## 1.0.5
+
+**Released: 2022-05-16**
+
+### Bug Fixes
+- Resolved issue where performance bars were overlapping in raid view
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 1.0.4
+
+**Released: 2022-04-28**
+
+### Bug Fixes
+- Resolved issue where overlay does not auto hide due to ACT plugin constantly sending inactive encounter data
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 1.0.3
+
+**Released: 2022-03-22**
+
+### Bug Fixes
+- Resolved misaligned rank in overlay header
+
+### Features
+- N/A
+
+### UI Changes
+- Updated Chinese translations
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 1.0.2
+
+**Released: 2022-02-18**
+
+### Bug Fixes
+- Resolved typo in job names
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 1.0.0
+
+**Released: 2022-01-17**
+
+### Bug Fixes
+- Resolved issue where spell timers do not reset on party wipe
+
+### Features
+- Added horizontal overlay
+    - Added setting at Interface > Horizontal > "Use Horizontal Overlay" to enable overlay
+    - Added setting at Interface > Horizontal > "Shrink Width" to only use as much horizontal space as necessary to display game data
+    - Added setting at Interface > Horizontal > "Alignment" to choose if the overlay should be left, right, or center aligned
+        - Choosing "Right" also makes the overlay display from right to left
+    - Metrics displayed in the overlay are controlled by the column settings at Player Table
+    - Metrics displayed in the player tooltips are controlled by the metric settings at Player Detail
+- Added setting at Interface > Theme > "Text Scale" to adjust the text zoom without affecting most of the UI elements
+
+### UI Changes
+- N/A
+
+### Code Changes
+- Updated most pixel-based font sizes to `rem` sizes
+- Changed performance bars from using `background-size` to using `width` to determine the size of the bar
+
+### Miscellaneous
+- Updated donor credits
+
+## 0.33.1-alpha
+
+**Released: 2022-01-04**
+
+### Bug Fixes
+- Fixed cooldown calculation for spells with charges
+
+### Features
+- N/A
+
+### UI Changes
+- Made spell timer glow more noticeable
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- Updated donor credits
+- Updated effect and instance data for FFXIV patch 6.05
+
+## 0.33.0-alpha
+
+**Released: 2021-12-06**
+
+### Bug Fixes
+- N/A
+
+### Features
+- Added ability to track debuffs
+- Added Endwalker actions (spells), statuses (effects), and zones
+
+### UI Changes
+- Updated action and effect icons
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.32.3-alpha
+
+**Released: 2021-12-04**
+
+### Bug Fixes
+- N/A
+
+### Features
+- N/A
+
+### UI Changes
+- Added Russian translations
+- Updated French translations
+- Updated Reaper and Sage job icons
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.32.2-alpha
+
+**Released: 2021-12-02**
+
+### Bug Fixes
+- N/A
+
+### Features
+- N/A
+
+### UI Changes
+- Updated Chinese, Portuguese, German, Korean, and Ukrainian translations
+
+### Code Changes
+- Added Reaper and Sage job icons
+
+### Miscellaneous
+- N/A
+
+## 0.32.1-alpha
+
+**Released: 2021-11-15**
+
+### Bug Fixes
+- Fixed Lightspeed cooldown for characters with Hyper Lightspeed
+- Fixed issue with overlay crashing in certain scenarios when job name display is enabled
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.32.0-alpha
+
+**Released: 2021-10-08**
+
+### Bug Fixes
+- N/A
+
+### Features
+- Added setting at Settings > Interface > "Use Job Names Instead of Player Names" to display job name instead of player name
+- Added TTS alert for low mana
+
+### UI Changes
+- N/A
+
+### Code Changes
+- Added debuff data
+
+### Miscellaneous
+- N/A
+
+## 0.31.0-alpha
+
+**Released: 2021-08-18**
+
+### Bug Fixes
+- N/A
+
+### Features
+- Added ability to trigger TTS alerts when self buffs or party buffs are received or when a party member casts a spell
+
+### UI Changes
+- Added ad support option
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.30.1-alpha
+
+**Released: 2021-08-17**
+
+### Bug Fixes
+- Resolved issue where visual timer does not tick down for items with special characters in their name
+- Resolved issue where permanent timers would not retain their static positions or permanency once invoked
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.30.0-alpha
+
+**Released: 2021-08-16**
+
+### Bug Fixes
+- Resolved issue where visual timer does not tick down for items with spaces in their name when in compact or normal mode
+
+### Features
+- Added swings metric
+
+### UI Changes
+- N/A
+
+### Code Changes
+- Updated error logging
+
+### Miscellaneous
+- N/A
+
+## 0.29.1-alpha
+
+**Released: 2021-07-12**
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Bug Fixes
+- N/A
+
+### Code Changes
+- Increased verbosity of Promise errors
+
+### Miscellaneous
+- N/A
+
+## 0.29.0-alpha
+
+**Released: 2021-06-13**
+
+### Features
+- Added spell timer support for actions that change into other actions (e.g. a Samurai can now track Tsubame-gaeshi instead of Kaeshi: Setsugekka)
+
+### UI Changes
+- N/A
+
+### Bug Fixes
+- Resolved issue where health-based TTS alerts would never trigger
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.28.3-alpha
+
+**Released: 2021-05-24**
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Bug Fixes
+- Resolved issue where a jobless combatant (e.g. Limit Breaks) would sometimes crash the overlay
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.28.2-alpha
+
+**Released: 2021-05-06**
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Bug Fixes
+- Resolved issue where some jobless combatants would appear in the overlay when collapsed
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.28.1-alpha
+
+**Released: 2021-05-05**
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Bug Fixes
+- Resolved issue where some effect timers appeared too many times
+- Resolved issue where some stack-based effects would reset to the maximum duration when a stack was lost
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.28.0-alpha
+
+**Released: 2021-05-02**
+
+### Features
+- Added setting "Show Names When Hovering Over Timer" in Spell Designer > General to enable timer name tooltips
+- Added spell timer support for PVP skills
+
+### UI Changes
+- Added translations for Ukrainian
+- Updated translations for German
+- Changed Interface > Decimal Accuracy setting to slider for UI consistency
+
+### Bug Fixes
+- Resolved issue where some buffs were missing from the available options
+- Resolved issue where "Invert Vertical" setting did not align timers to bottom of UI Builder sections
+- Resolved issue where TTS alerts would include punctuation in some Windows voices
+- Resolved issue where disabling UI Builder while in "Edit UI" did not remove the UI Builder grid
+- Resolved issue where Dualcast would not be included in permanent timers for Red Mage
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.27.2-alpha
+
+**Released: 2021-04-26**
+
+### Bug Fixes
+- Resolved issue where clicking the highlighted settings cog did not remove the highlight
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.27.1-alpha
+
+**Released: 2021-04-26**
+
+### Bug Fixes
+- Resolved issue where adding timers may not work until the overlay is reloaded
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.27.0-alpha
+
+**Released: 2021-04-25**
+
+### Bug Fixes
+- Resolved issue with reordering multiple-select dropdowns in settings
+- Resolved issue where cooldowns would be inaccurate for Contre Sixte, Manafication, and Sharpcast if your character has the recast reduction traits
+- Resolved issue where timer indicator was shifted right by 3 pixels when setting to hide icons was enabled
+- Resolved issue where resizing a spell timer UI section would move it back to its original position
+
+### Features
+- Added setting "Display Permanently" for each timer type in Settings > Spell Timers
+- Added setting "Use Static Positions for Permanent Timers" for each timer type in Settings > Spell Timers
+- Added setting "Use Text to Speech" at Settings > Party Spell Timers
+- Added setting "Only Track in These Instances" at Settings > Party Spell Timers
+- Added spell timer preview when in Edit UI mode
+- Added Discord webhook support at setting tab "Discord Webhook"
+
+### UI Changes
+- Made parser footer more responsive at small overlay sizes (less than or equal to 350 pixels wide)
+
+### Code Changes
+- Consolidated duplicated localization texts
+- Removed unnecessary setting schema value lookup functions
+- Made settings saving more graceful
+
+### Miscellaneous
+- N/A
+
+## 0.26.0-alpha
+
+**Released: 2021-04-22**
+
+### Bug Fixes
+- Resolved issue where context menu was misplaced when using a non-100 zoom setting
+
+### Features
+- Added setting "Text to Speech Trigger" to allow choosing when the TTS alert should trigger
+- Added new setting tab "Party Spell Timers" to set spells that should be tracked for other party/alliance members
+- Added icon-only spell timer layout at Spell Timers > Layout; enabling this will override the setting to show/hide spell icons
+- Added new setting tab "Spell Designer" for customizing the appearance of timers
+- Added spell timer custom UI builder
+    - New setting tab "UI Builder" allows creation of spell timer sections that track only the spell types you choose
+    - Setting "Use UI Builder" in the UI Builder tab must be enabled for changes to take effect
+    - In the overlay, right clicking and choosing "Edit UI" will allow you to drag and resize the spell timer sections you created
+    - UI position/size edits are saved after right clicking and choosing "Save UI"
+    - If you are unable to right click on your overlay (i.e. the overlay is empty), you can either:
+        - Cast a spell that you're already tracking, then you will be able to right click on the spell timer
+        - In OverlayPlugin, turn off the "Lock overlay" option or turn on the "Force white background" option
+            - Be sure to turn off the white background or lock your overlay once you've chosen "Edit UI" or opened your settings
+            - A warning will appear asking you to lock your overlay again once you choose "Edit UI" after unlocking the overlay
+
+### UI Changes
+- Setting at Spell Timers > Use Minimal Layout has been renamed to "Layout" to allow for the icon-only layout
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
+
+## 0.25.1-alpha
+
+**Released: 2021-04-14**
+
+### Bug Fixes
+- Resolved issue where spell timer cooldowns are incorrect when system time does not match game time
+
+### Features
+- N/A
+
+### UI Changes
+- N/A
+
+### Code Changes
+- N/A
+
+### Miscellaneous
+- N/A
 
 ## 0.25.0-alpha
 

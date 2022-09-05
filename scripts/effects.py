@@ -6,7 +6,7 @@ import shutil
 from os import path
 
 def getPage(page_num):
-	url = "https://xivapi.com/search?page=" + str(page_num) + "&indexes=Status&filters=InflictedByActor=0"
+	url = "https://xivapi.com/search?page=" + str(page_num) + "&indexes=Status"
 	res = requests.get(url = url)
 
 	return res.json()
@@ -38,8 +38,40 @@ def saveEffects(effects):
 		json.dump(effects, file, indent = "\t", separators = (",", " : "), ensure_ascii = False)
 		file.close()
 
-page    = 1
-effects = {}
+def loadEffects():
+	with open("../src/data/game/effects.json") as file:
+		data = json.load(file)
+
+		file.close()
+		return data
+
+def loadDots():
+	with open("../src/data/game/dot-jobs.json") as file:
+		data = json.load(file)
+
+		file.close()
+		return data
+
+def loadBuffs():
+	with open("../src/data/game/buff-jobs.json") as file:
+		data = json.load(file)
+
+		file.close()
+		return data
+
+def loadDebuffs():
+	with open("../src/data/game/debuff-jobs.json") as file:
+		data = json.load(file)
+
+		file.close()
+		return data	
+
+page             = 1
+effects          = {}
+existing_effects = loadEffects()
+dots             = loadDots()
+buffs            = loadBuffs()
+debuffs          = loadDebuffs()
 
 while (True):
 	page_data = getPage(page)
@@ -48,17 +80,31 @@ while (True):
 	for effect in page_data["Results"]:
 		id = effect["ID"]
 
+		if str(id) in existing_effects:
+			if (existing_effects[str(id)]["locales"]["name"]["en"] != existing_effects[str(id)]["locales"]["name"]["jp"]):
+				effects[id] = existing_effects[str(id)]
+
+			continue
+
 		effect_data = getEffect(id)
-		dot         = False
+		item_type   = "effect"
+
+		if (effect_data["Name_en"] == effect_data["Name_ja"]):
+			continue
 
 		if (effect_data["Category"] == 2):
-			if ("over time" not in effect_data["Description_en"]):
+			if effect_data["InflictedByActor"] == 1:
 				continue
+			elif "over time" not in effect_data["Description_en"]:
+				item_type = "debuff"
 			else:
-				dot = True
+				item_type = "dot"
 
 		effects[id] = {
-			"dot"     : dot,
+			"type"    : item_type,
+			"dot"     : (item_type == "dot"),
+			"debuff"  : (item_type == "debuff"),
+			"jobs"    : [],
 			"locales" : {
 				"name" : {
 					"en" : effect_data["Name_en"],
@@ -69,8 +115,15 @@ while (True):
 			}
 		}
 
+		if effect_data["Name_en"] in dots:
+			effects[id]["jobs"] = dots[effect_data["Name_en"]]
+		elif effect_data["Name_en"] in buffs:
+			effects[id]["jobs"] = buffs[effect_data["Name_en"]]
+		elif effect_data["Name_en"] in debuffs:
+			effects[id]["jobs"] = debuffs[effect_data["Name_en"]]
+
 		saveImage(id, effect_data["Icon"])
 
-	if (page == None):
+	if (page == None or page <= page_data["Pagination"]["Page"]):
 		saveEffects(effects)
 		break

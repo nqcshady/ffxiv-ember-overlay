@@ -1,8 +1,10 @@
 # FFXIV Ember Overlay & Spell Timers
 Powerful, data-focused DPS overlay and spell timers for Final Fantasy XIV. Can be used with the [OverlayPlugin](https://github.com/ngld/OverlayPlugin/releases) and [ACTWebSocket](https://github.com/ZCube/ACTWebSocket) plugins for [Advanced Combat Tracker](https://advancedcombattracker.com/download.php).
 
+### Updated for Endwalker.
+
 [![GitHub](https://img.shields.io/github/license/GoldenChrysus/ffxiv-ember-overlay.svg?style=flat-square)](https://github.com/GoldenChrysus/ffxiv-ember-overlay/blob/master/LICENSE)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/GoldenChrysus/ffxiv-ember-overlay.svg?style=flat-square)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/GoldenChrysus/ffxiv-ember-overlay/master.svg?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/GoldenChrysus/ffxiv-ember-overlay/bleeding-edge.svg?style=flat-square)
 [![Works with OverlayPlugin](https://img.shields.io/badge/works%20with-OverlayPlugin-blue.svg?style=flat-square)](https://github.com/ngld/OverlayPlugin)
 [![Works with ACTWebSocket](https://img.shields.io/badge/works%20with-ACTWebSocket-blue.svg?style=flat-square)](https://github.com/ZCube/ACTWebSocket)
@@ -26,6 +28,17 @@ Add a new skin URL to https://goldenchrysus.github.io/ffxiv/ember-overlay/ and c
 ## Discord
 Join the Discord server to receive live updates, report bugs, or request features at: [https://discord.io/emberoverlay](https://discord.io/emberoverlay)
 
+## Navigation
+- <a href="#features">Features</a>
+- <a href="#installation">Installation</a>
+- <a href="#changelog">Changelog</a>
+- <a href="#staging-site">Staging Site</a>
+- <a href="#credits">Credits</a>
+- <a href="#building">Building</a>
+- <a href="#contributing">Contributing</a>
+- <a href="#license">License</a>
+- <a href="#copyright">Copyright</a>
+
 ## Features
 ### Informative tabs for damage, healing, tanking, raiding, and aggro.
 ![DPS tab](https://i.imgur.com/EjRWhdU.png "DPS tab")
@@ -43,9 +56,9 @@ Join the Discord server to receive live updates, report bugs, or request feature
 ![Classic theme](https://i.imgur.com/wq65hM7.png "Classic theme")
 
 ### Spell timers.
-**Spell, buff, and DOT timers.**
+**Spell, buff, DOT, and debuff timers.**
 
-![Spell, buff, and DOT timers](https://i.imgur.com/7qNwV06.gif "Spell, buff, and DOT timers")
+![Spell, buff, DOT, and debuff timers](https://i.imgur.com/7qNwV06.gif "Spell, buff, DOT, and debuff timers")
 
 **Optional minimal layout.**
 
@@ -149,11 +162,15 @@ When viewing the [changelog](/CHANGELOG.md), you will be able to determine which
 - **Claud** - Spanish
 - **Okâme** - French
 - **Tsunari96** - Tsunari96#8491 (Discord) - Korean
+- [**justscribe**](https://github.com/justscribe) - [Twitch](https://www.twitch.tv/justscribe), [Website](https://ffxiv.gaming4eternity.online/) - Ukrainian
+- **Gisar** - Russian
 
 ### Featured Donors
 
 - Pimpy Shortstocking
 - FortiusTTV - [Twitch](https://www.twitch.tv/fortiusttv)
+- loski3
+- Vale Alania
 
 ### Donors
 
@@ -161,6 +178,7 @@ When viewing the [changelog](/CHANGELOG.md), you will be able to determine which
 - Vulasuw
 - Jessica
 - mehdont
+- Tomo
 
 ### Misc.
 

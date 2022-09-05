@@ -5,6 +5,7 @@ import OverlayPluginService from "./PluginService/OverlayPluginService";
 import OverlayProcService from "./PluginService/OverlayProcService";
 import SocketService from "./PluginService/SocketService";
 import UsageService from "./UsageService";
+import MessageProcessor from "../processors/MessageProcessor";
 
 class PluginService extends PluginServiceAbstract {
 	constructor() {
@@ -84,14 +85,19 @@ class PluginService extends PluginServiceAbstract {
 		let mode     = (internal || store.getState().internal).mode;
 		let data     = {
 			enmity : UsageService.usingEnmity(settings),
-			log    : UsageService.usingLogTTS(settings)
+			log    : UsageService.usingLog(mode, settings),
+			combat : UsageService.usingCombatData(mode, settings)
 		};
 		let events   = [
-			"ChangePrimaryPlayer"
+			"ChangePrimaryPlayer",
+			"ChangeZone"
 		];
 
-		if (mode === "stats") {
+		if (data.combat) {
 			events.push("CombatData");
+		}
+
+		if (mode === "stats") {
 			events.push("EnmityAggroList");
 			events.push("PartyChanged");
 		}
@@ -100,11 +106,15 @@ class PluginService extends PluginServiceAbstract {
 			events.push("EnmityTargetData");
 		}
 
-		if (data.log || mode === "spells") {
+		if (data.log) {
 			events.push("LogLine");
 		}
 
 		return events;
+	}
+
+	getCombatants() {
+		this.plugin_service.callHandler(this.plugin_service.createMessage("getCombatants"), MessageProcessor.processMessage);
 	}
 
 	tts(messages) {

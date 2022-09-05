@@ -18,6 +18,7 @@ class TwitchAPIService {
 					});
 				})
 				.catch((e) => {
+					console.error(JSON.stringify(e));
 					reject(e);
 				});
 		});

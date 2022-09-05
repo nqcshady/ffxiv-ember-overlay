@@ -14,13 +14,15 @@ class TabSyncService {
 			switch (wrapped_action.action.type) {
 				case "setSetting":
 					valid_action = true;
-	
+
 					break;
 	
 				case "setSettings":
-					valid_action = false;
+					valid_action = true;
 	
 					let state = store.getState();
+
+					wrapped_action.action.skip_sync = true;
 	
 					state
 						.settings_data

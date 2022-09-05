@@ -7,7 +7,9 @@ import LocalizationService from "../../../services/LocalizationService";
 
 import MetricNameTable from "./Inputs/Table/MetricNameTable";
 import TTSRulesTable from "./Inputs/Table/TTSRulesTable";
+import SpellsUITable from "./Inputs/Table/SpellsUITable";
 import Slider from "./Inputs/Slider";
+import ObjectService from "../../../services/ObjectService";
 
 class Section extends React.Component {
 	constructor() {
@@ -17,7 +19,9 @@ class Section extends React.Component {
 	}
 
 	getSettingValue(setting_data) {
-		return (typeof setting_data.value === "function") ? setting_data.value.call(this, this) : setting_data.value;
+		return (typeof setting_data.value === "function")
+			? setting_data.value.call(this, this)
+			: ObjectService.getByKeyPath(this.props.settings, setting_data.key_path);
 	}
 
 	componentWillMount() {
@@ -33,13 +37,24 @@ class Section extends React.Component {
 	}
 	
 	componentDidMount() {
-		Array.prototype.forEach.call(document.querySelectorAll(".multiple.selection"), (el) => {
-			Sortable.create(el, {draggable: "a", onUpdate: (evt, originalEvent) => { this.handleChange(evt); }});
+		Array.prototype.forEach.call(document.querySelectorAll(".multiple.selection.standalone"), (el) => {
+			Sortable.create(
+				el,
+				{
+					draggable: "a",
+					onUpdate: (evt, originalEvent) => {
+						this.handleChange(evt, true);
+					}
+				}
+			);
 		});
 	}
 
 	render() {
 		let settings = [];
+		let info     = (this.props.data.info)
+			? <p>{this.props.data.info()}</p>
+			: "";
 		// let language = this.props.settings.interface.language;
 
 		for (let setting_data of this.props.data.settings) {
@@ -49,7 +64,7 @@ class Section extends React.Component {
 
 			let setting;
 
-			let label_text = LocalizationService.getSettingText(setting_data.key_path) || "";
+			let label_text = LocalizationService.getSettingText(setting_data.locale || setting_data.key_path) || "";
 			let label      = (label_text) ? <label>{label_text}</label> : "";
 			let value      = this.getSettingValue(setting_data);
 
@@ -62,6 +77,7 @@ class Section extends React.Component {
 					let options = (typeof setting_data.options === "function") ? setting_data.options() : setting_data.options;
 
 					setting = <Select fluid labeled multiple={setting_data.multiple || false} search={setting_data.search || false}
+						className="standalone"
 						options={options}
 						defaultValue={value}
 						key_path={setting_data.key_path}
@@ -71,7 +87,7 @@ class Section extends React.Component {
 					break;
 
 				case "textbox":
-					setting = <Input defaultValue={value} key_path={setting_data.key_path} onChange={this.props.changeCallback}/>;
+					setting = <Input defaultValue={value} fluid={setting_data.fluid} key_path={setting_data.key_path} onChange={this.props.changeCallback}/>;
 
 					break;
 
@@ -132,6 +148,12 @@ class Section extends React.Component {
 
 					break;
 
+				case "SpellsUITable":
+					label   = "";
+					setting = <SpellsUITable value={value} options={setting_data.options()} key_path={setting_data.key_path} onChange={this.props.changeCallback}/>;
+
+					break;
+
 				default:
 					break;
 			}
@@ -147,6 +169,7 @@ class Section extends React.Component {
 		return(
 			<React.Fragment>
 				<Header as="h2">{LocalizationService.getSettingsSubsectionText(this.props.parent_path, this.props.index)}</Header>
+				{info}
 				<div>
 					{settings}
 				</div>
@@ -154,9 +177,10 @@ class Section extends React.Component {
 		);
 	}
 	
-	handleChange(e) {
-		e.target.key_path  = e.target.id;
+	handleChange(e, drag) {
+		e.target.key_path  = e.target.id || e.target.getAttribute("key_path");
 		e.target.selection = true;
+		e.target.drag      = drag;
 		
 		this.props.changeCallback(e.target, e.target);
 	}

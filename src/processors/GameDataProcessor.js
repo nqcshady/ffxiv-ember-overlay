@@ -1,4 +1,5 @@
 import store from "../redux/store/index";
+import clone from "lodash.clonedeep";
 
 import Constants from "../constants/index";
 import SkillData from "../constants/SkillData";
@@ -7,6 +8,9 @@ import PlayerProcessor from "./PlayerProcessor";
 import LocalizationService from "../services/LocalizationService";
 import TTSService from "../services/TTSService";
 import UsageService from "../services/UsageService";
+import SpellService from "../services/SpellService";
+
+import { createUUID } from "../helpers/UUIDHelper";
 
 class GameDataProcessor  {
 	normalizeFieldLocale(value) {
@@ -47,12 +51,20 @@ class GameDataProcessor  {
 			if (data.Encounter[key] !== undefined) {
 				data.Encounter[key] = this.normalizeFieldLocale(data.Encounter[key]);
 			}
+		}
 
-			for (let player_name in data.Combatant) {
+		for (let player_name in data.Combatant) {
+			for (let key in Constants.PlayerDataTitles) {
 				if (data.Combatant[player_name][key] !== undefined) {
 					data.Combatant[player_name][key] = this.normalizeFieldLocale(data.Combatant[player_name][key]);
 				}
 			}
+
+			if ((data.Combatant[player_name].Job || "").toLowerCase() === "limit break") {
+				data.Combatant[player_name].Job = "LMB";
+			}
+
+			data.Combatant[player_name].UUID = createUUID();
 		}
 
 		data = this.injectMaxDPS(data, current_state, loading_sample);
@@ -271,79 +283,280 @@ class GameDataProcessor  {
 		}
 	}
 
-	parseSpellLogLine(data, state) {
+	parseSpellLogLine(data, state, processed_state) {
 		data = data.line;
-		
-		let in_use = false;
 
+		let date       = new Date();
+		let event_code = +data[0];
+		let log_data   = {
+			suffix : ""
+		};
 
-		switch (+data[0]) {
+		switch (event_code) {
+			case 3:
+				log_data.char_id = parseInt(data[2], 16);
+
+				if (log_data.char_id !== state.internal.character_id) {
+					return false;
+				}
+
+				log_data.char_job   = Constants.GameJobsID[parseInt(data[4], 16)] || null;
+				log_data.char_level = parseInt(data[5], 16);
+
+				return log_data;
+
 			case 21:
 			case 22:
-				let skill_id = String(parseInt(data[4], 16));
+				log_data.spell_index      = 4;
+				log_data.char_id_index    = 2;
+				log_data.spell_name_index = 5;
+				log_data.char_name_index  = log_data.char_id_index + 1;
+				log_data.type             = "skill";
+				log_data.subtype          = log_data.type;
+				log_data.lookup_key       = "spells";
 
-				if (state.internal.character_id !== parseInt(data[2], 16)) {
-					return in_use;
+				break;
+
+			case 25:
+				log_data.char_id = parseInt(data[2], 16);
+
+				if (log_data.char_id !== state.internal.character_id) {
+					return false;
 				}
 
-				if (state.settings.spells_mode.spells.indexOf(skill_id) === -1) {
-					return in_use;
-				}
-
-				if (in_use === false) {
-					in_use = {};
-				}
-
-				in_use[`skill-${skill_id}`] = {
-					type : "skill",
-					id   : skill_id,
-					time : data[1],
-					name : data[5]
-				};
-
-				return in_use;
+				// return "death";
+				return false;
 
 			case 26:
-				let effect_id = String(parseInt(data[2], 16));
+			case 30:
+				log_data.spell_index = 2;
+
+				let effect_id = String(parseInt(data[log_data.spell_index], 16));
 
 				if (!SkillData.Effects[effect_id]) {
-					return in_use;
+					return false;
 				}
 
-				let valid_names  = [];
-				let dot          = SkillData.Effects[effect_id].dot;
-				let player_index = (dot) ? 5 : 7;
-				let setting_key  = (dot) ? "dots" : "effects";
+				log_data.type             = "effect";
+				log_data.dot              = SkillData.Effects[effect_id].dot;
+				log_data.debuff           = SkillData.Effects[effect_id].debuff;
+				log_data.subtype          = (log_data.dot)
+					? "dot"
+					: ((log_data.debuff)
+						? "debuff"
+						: log_data.type);
+				log_data.lookup_key       = log_data.subtype + "s";
+				log_data.char_id_index    = (log_data.dot || log_data.debuff) ? 5 : 7;
+				log_data.char_name_index  = log_data.char_id_index + 1;
+				log_data.spell_name_index = 3;
+				log_data.duration_index   = 4;
+				log_data.stacks           = +data[9];
 
-				if (state.internal.character_id !== parseInt(data[player_index], 16)) {
-					return in_use;
-				}
+				break;
 
-				for (let id of state.settings.spells_mode[setting_key]) {
-					valid_names.push(LocalizationService.getEffectName(id, "en"));
-				}
-
-				if (valid_names.indexOf(LocalizationService.getEffectName(effect_id, "en")) === -1) {
-					return in_use;
-				}
-
-				if (in_use === false) {
-					in_use = {};
-				}
-
-				in_use[`effect-${effect_id}`] = {
-					type     : "effect",
-					id       : effect_id,
-					time     : data[1],
-					name     : data[3],
-					duration : +data[4]
-				};
-
-				return in_use;
+			case 33:
+				return (data[3] === "40000005") ? "wipe" : false;
 
 			default:
-				return in_use;
+				return false;
 		}
+
+		log_data.spell_id  = String(parseInt(data[log_data.spell_index], 16));
+		log_data.char_id   = parseInt(data[log_data.char_id_index], 16);
+		log_data.char_type = (state.internal.character_id === log_data.char_id) ? "you" : false;
+		log_data.party     = (log_data.char_type !== "you");
+
+		if (
+			log_data.party &&
+			state.settings.spells_mode.party_zones.length &&
+			state.settings.spells_mode.party_zones.indexOf(String(state.internal.current_zone_id)) === -1
+		) {
+			return false;
+		}
+
+		if (!log_data.char_type) {
+			log_data.char_name = data[log_data.char_name_index];
+
+			if (!state.internal.game.Combatant || !state.internal.game.Combatant[log_data.char_name]) {
+				return false;
+			}
+
+			log_data.job = (state.internal.game.Combatant[log_data.char_name].Job || "").toUpperCase();
+
+			if (!Constants.GameJobs[log_data.job]) {
+				return false;
+			}
+
+			log_data.char_type  = (state.settings.spells_mode.ui.use) ? Constants.GameJobs[log_data.job].role : "party";
+			log_data.lookup_key = "party_" + log_data.lookup_key;
+			log_data.suffix     = "party";
+		}
+
+		if (
+			!state.internal.spells.allowed_types[log_data.subtype][log_data.char_type] &&
+			!state.internal.spells.allowed_types[log_data.subtype][log_data.job]
+		) {
+			return false;
+		}
+
+		if (log_data.type === "effect") {
+			log_data.english_name = LocalizationService.getSpellName(log_data.subtype, log_data.spell_id, "en");
+
+			if (!SpellService.isValidName(log_data.lookup_key, log_data.english_name)) {
+				return false;
+			}
+		} else {
+			if (state.settings.spells_mode[log_data.lookup_key].indexOf(log_data.spell_id) === -1) {
+				if (this.isValidIndirection(log_data)) {
+					return this.processIndirection(log_data, data, state);
+				}
+
+				return false;
+			}
+
+			log_data.english_name = LocalizationService.getSpellName(log_data.subtype, log_data.spell_id, "en");
+		}
+
+		let state_data    = processed_state || clone(state.internal.spells);
+		let defaulted_key = `${log_data.subtype}-` + SpellService.getKeyName(log_data.english_name);
+		let suffixes      = [];
+
+		if (!log_data.party) {
+			suffixes.push("");
+		} else {
+			if (state.internal.spells.allowed_types[log_data.subtype][log_data.char_type]) {
+				suffixes.push(log_data.char_type);
+			}
+
+			if (state.settings.spells_mode.ui.use && state.internal.spells.allowed_types[log_data.subtype][log_data.job]) {
+				suffixes.push(log_data.job);
+			}
+		}
+
+		log_data.in_use_key = (log_data.type === "effect")
+			? `${log_data.type}-` + SpellService.getKeyName(log_data.english_name)
+			: `${log_data.type}-${log_data.spell_id}`;
+
+		if (!log_data.party && state_data.defaulted[defaulted_key]) {
+			let defaulted = state_data.defaulted[defaulted_key];
+
+			log_data.defaulted     = true;
+			log_data.type_position = defaulted.position;
+
+			if (defaulted.id !== log_data.spell_id) {
+				if (event_code === 30) {
+					state_data.in_use[log_data.in_use_key] = clone(state_data.in_use[defaulted.key]);
+
+					state_data.in_use[log_data.in_use_key].spell_id = log_data.spell_id;
+					state_data.in_use[log_data.in_use_key].duration = 0;
+				}
+
+				delete state_data.in_use[defaulted.key];
+
+				state_data.defaulted[defaulted_key].id  = log_data.spell_id;
+				state_data.defaulted[defaulted_key].key = log_data.in_use_key;
+
+				if (event_code === 30) {
+					return state_data;
+				}
+			}
+		}
+
+		for (let suffix of suffixes) {
+			log_data.current_in_use_key = log_data.in_use_key;
+
+			if (suffix) {
+				log_data.current_in_use_key += `-${suffix}`;
+
+				if (suffix !== "party") {
+					log_data.char_type = suffix;
+				}
+			}
+
+			if (event_code === 30) {
+				delete state_data.in_use[log_data.current_in_use_key];
+			} else {
+				if (state_data.in_use[log_data.current_in_use_key] && +state_data.in_use[log_data.current_in_use_key].stacks > log_data.stacks) {
+					return false;
+				}
+
+				state_data.in_use[log_data.current_in_use_key] = {
+					type          : log_data.type,
+					subtype       : log_data.subtype,
+					id            : log_data.spell_id,
+					time          : date,
+					name          : data[log_data.spell_name_index],
+					duration      : (log_data.duration_index) ? +data[log_data.duration_index] : 0,
+					stacks        : log_data.stacks,
+					log_type      : log_data.char_type + "-" + log_data.subtype,
+					party         : log_data.party,
+					defaulted     : log_data.defaulted,
+					type_position : log_data.type_position
+				};
+			}
+		}
+
+		if (this.isValidIndirection(log_data)) {
+			return this.processIndirection(log_data, data, state, state_data);
+		}
+
+		return state_data;
+	}
+
+	isValidIndirection(log_data) {
+		return (log_data.type === "skill" && SkillData.SkillIndirections[log_data.spell_id]);
+	}
+
+	processIndirection(log_data, data, state, processed_state) {
+		let indirect_id = SkillData.SkillIndirections[log_data.spell_id];
+
+		data[log_data.spell_index]      = indirect_id.toString(16);
+		data[log_data.spell_name_index] = null;
+
+		return this.parseSpellLogLine({line : data}, state, processed_state);
+	}
+
+	getAllowedSpellTypes(state) {
+		let types = {
+			skill  : {
+				you   : true,
+				party : true
+			},
+			effect : {
+				you   : true,
+				party : true
+			},
+			dot    : {
+				you   : true,
+				party : true
+			},
+			debuff : {
+				you   : true,
+				party : true
+			}
+		};
+
+		if (state.settings.spells_mode.ui.use) {
+			types.skill.you    = false;
+			types.effect.you   = false;
+			types.dot.you      = false;
+			types.debuff.you   = false;
+			types.skill.party  = false;
+			types.effect.party = false;
+			types.debuff.party = false;
+
+			for (let uuid in state.settings.spells_mode.ui.sections) {
+				let section = state.settings.spells_mode.ui.sections[uuid];
+
+				for (let type of section.types) {
+					let data = type.split("-");
+
+					types[data[1]][data[0]] = true;
+				}
+			}
+		}
+
+		return types;
 	}
 }
 
